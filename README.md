@@ -1,6 +1,6 @@
 # SolarmanWidget
 
-This Garmin Connect IQ Widget allows you to monitor your solar output from your Ginlong Solarman PV System on your Garmin Connect IQ device
+This Garmin Connect IQ Widget allows you to monitor your solar output from your Solarman PV System on your Garmin Connect IQ device
 
 This widget requires the following to run correctly:
 - a Garmin device that supports Garmin Connect IQ v1.3 or higher;
