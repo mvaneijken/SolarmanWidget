@@ -3,7 +3,6 @@
         <property id="PROP_STARTPAGE" type="number">1</property>
         <property id="PROP_USERNAME" type="string"></property>
         <property id="PROP_PASSWORD" type="string"></property>
-        <property id="PROP_UID" type="string"></property>
         <property id="PROP_PLANTID" type="string"></property>
 	</properties>
 	<settings>
@@ -22,9 +21,6 @@
         </setting>
         <setting propertyKey="@Properties.PROP_PASSWORD" title="@Strings.title_password">
         	<settingConfig type="Password" required="false"></settingConfig>
-        </setting>
-		<setting propertyKey="@Properties.PROP_UID" title="@Strings.title_uid">
-        	<settingConfig type="AlphaNumeric" required="false" readonly="true"></settingConfig>
         </setting>
 		<setting propertyKey="@Properties.PROP_PLANTID" title="@Strings.title_plantid">
         	<settingConfig type="AlphaNumeric" required="false" readonly="true"></settingConfig>
