@@ -117,9 +117,6 @@ class SolarmanWidgetView extends WatchUi.View {
         // Get Current Page From settings
         CurrentPage=Application.getApp().getProperty("PROP_STARTPAGE");
 
-        // Get the UID
-        uid=Application.getApp().getProperty("PROP_UID");
-
         // Get the plantid
         plantid=Application.getApp().getProperty("PROP_PLANTID");
 
@@ -252,7 +249,7 @@ class SolarmanWidgetView extends WatchUi.View {
         {
             // Make sure no error is shown
             ShowError=false;
-            
+
         }
         else if (responseCode==Communications.BLE_CONNECTION_UNAVAILABLE)
         {
@@ -480,9 +477,9 @@ class SolarmanWidgetView extends WatchUi.View {
         // only retrieve the settings if they've actually changed
 
         // Make the authentication request
-        System.println("makeRequest url:"+url);
-        System.println("makeRequest options:"+options);
-        System.println("makeRequestPlantId param:"+param);
+        System.println("makeRequest url: "+url);
+        System.println("makeRequest options: "+options);
+        System.println("makeRequest param: "+param);
         Communications.makeWebRequest(url,param,options,method(:onReceive));
     }
 
