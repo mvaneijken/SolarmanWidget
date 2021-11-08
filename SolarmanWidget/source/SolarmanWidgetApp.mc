@@ -8,7 +8,6 @@ class SolarmanWidgetApp extends Application.AppBase {
 
     function initialize() {
         AppBase.initialize();
-
     }
 
     // onStart() is called on application start up
@@ -24,7 +23,6 @@ class SolarmanWidgetApp extends Application.AppBase {
         $.gSettingsChanged = true;
         WatchUi.requestUpdate();
     }
-
 
     // Return the initial view of your application here
     function getInitialView() {
