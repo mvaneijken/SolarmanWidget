@@ -7,33 +7,28 @@ using Toybox.Application;
 class SolarmanWidgetGlanceView extends WatchUi.GlanceView {
 
     function initialize() {
+        //System.println("SolisWidgetGlanceView:initialize");
         GlanceView.initialize();
     }
 
     function onUpdate(dc) {
-        var glancesName = "";
-        glancesName = Application.getApp().getProperty("glancesName");
-        var glancesValue = "";
-        glancesValue = Application.getApp().getProperty("glancesValue");
+        //System.println("SolisWidgetGlanceView:onUpdate");
 
-        System.println(glancesValue);
-        System.println(glancesValue);
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
+        dc.setColor(0x000000,0x000000); //(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
         dc.clear();
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(0xFFFFFF,-1); //(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
 
-        var font = Graphics.FONT_SMALL;
-        var fontHeight = Graphics.getFontHeight(font);
+        var font as Number = 2; //Graphics.FONT_SMALL;
+        var fontHeight as Number = Graphics.getFontHeight(font);
 
-        var lineOneValue = glancesName;
-        var lineTwoValue = glancesValue;
+        var lineOneValue as String = Application.getApp().getProperty("glanceName");
+        var lineTwoValue as String = Application.getApp().getProperty("glanceVal");
 
-        var height = dc.getHeight();
-        System.println(dc.getHeight());
-        var lineOnePosY = 0;
-        var lineTwoPosY = lineOnePosY + ((fontHeight/2) + (fontHeight/2));
+        var height as Number = dc.getHeight();
+        var lineOnePosY as Number = 0;
+        var lineTwoPosY as Number = lineOnePosY + ((fontHeight/2) + (fontHeight/2));
 
-        dc.drawText(dc.getWidth()/2,lineOnePosY,font,lineOneValue,Graphics.TEXT_JUSTIFY_CENTER);
-        dc.drawText(dc.getWidth()/2,lineTwoPosY,font,lineTwoValue,Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(dc.getWidth()/2,lineOnePosY,font,lineOneValue,1); //Graphics.TEXT_JUSTIFY_CENTER)
+        dc.drawText(dc.getWidth()/2,lineTwoPosY,font,lineTwoValue,1); //Graphics.TEXT_JUSTIFY_CENTER)
     }
-    }
+}

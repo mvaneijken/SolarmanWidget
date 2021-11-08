@@ -1,39 +1,38 @@
 <strings>
     <string id="AppName">SolarmanWidget</string>
 
-    <string id="UPDATING">Updating...</string>
-    <string id="CURRENT">Current</string>
-    <string id="TODAY">Today</string>
-    <string id="THISMONTH">Month</string>
-    <string id="THISYEAR">Year</string>
-    <string id="TOTAL">Total</string>
+    <string id="E1">Try again</string>
+    <string id="E2">or check</string>
+    <string id="E3">settings</string>
 
-    <string id="NOBLUETOOTHERRORTEXT1">No Connection</string>
-    <string id="NOBLUETOOTHERRORTEXT2">Check connection</string>
-    <string id="NOBLUETOOTHERRORTEXT3">with mobile phone</string>
+    <string id="B1">No Connection</string>
+    <string id="B2">Check connection</string>
+    <string id="B3">with mobile phone</string>
 
-    <string id="INVALIDSETTINGSTEXT1">Invalid settings</string>
-    <string id="INVALIDSETTINGSTEXT2">Configure correct settings at</string>
-    <string id="INVALIDSETTINGSTEXT3">Garmin Connect or Express</string>
+    <string id="I1">Invalid settings</string>
+    <string id="I2">Configure correct settings at</string>
+    <string id="I3">Garmin Connect or Express</string>
 
-    <string id="APIERRORTEXT2">Check Solarman</string>
-    <string id="APIERRORTEXT3">credentials in  app</string>
+    <string id="A1">Login fout</string>
+    <string id="A2">Check Solarman</string>
+    <string id="A3">credentials in app</string>
 
-    <string id="NOINTERNET1">No Internet"</string>
-    <string id="NOINTERNET2">turn on wifi or data"</string>
-    <string id="NOINTERNET3">connection on phone"</string>
+    <string id="N1">No Internet"</string>
+    <string id="N2">turn on wifi or data"</string>
+    <string id="N3">connection on phone"</string>
 
-    <string id="title_startpage">Starting Page</string>
-    <string id="opt_page_1">Current Power</string>
-    <string id="opt_page_2">Today</string>
-    <string id="opt_page_3">Month</string>
-    <string id="opt_page_4">Year</string>
-    <string id="opt_page_5">Total</string>
-    <string id="opt_page_6">Overview</string>
+    <string id="SP">Starting Page</string>
+    <string id="UP">Updating...</string>
+    <string id="O1">Current</string>
+    <string id="O2">Today</string>
+    <string id="O3">Month</string>
+    <string id="O4">Year</string>
+    <string id="O5">Total</string>
+    <string id="O6">Overview</string>
 
-    <string id="title_username">Solarman Portal Username</string>
-    <string id="title_password">Solarman Portal Password</string>
+    <string id="C1">Username</string>
+    <string id="C2">Password</string>
 
-    <string id="title_uid">Solarman User Identifier</string>
-    <string id="title_plantid">Solarman Site Identifier</string>
+    <string id="UI">Solarman User Identifier</string>
+    <string id="PI">Solarman Site Identifier</string>
 </strings>
