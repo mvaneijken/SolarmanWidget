@@ -1,8 +1,8 @@
 <resources>
 	<properties>
         <property id="SP" type="number">1</property>
-        <property id="usr" type="string"></property>
-        <property id="pwrd" type="string"></property>
+        <property id="PUN" type="string"></property>
+        <property id="PPS" type="string"></property>
         <property id="plantid" type="number">-1</property>
 	</properties>
 	<settings>
@@ -16,10 +16,10 @@
             	<listEntry value="6">@Strings.O6</listEntry>
             </settingConfig>
         </setting>
-        <setting propertyKey="@Properties.usr" title="@Strings.C1">
+        <setting propertyKey="@Properties.PUN" title="@Strings.C1">
         	<settingConfig type="AlphaNumeric" required="false"></settingConfig>
         </setting>
-        <setting propertyKey="@Properties.pwrd" title="@Strings.C2">
+        <setting propertyKey="@Properties.PPS" title="@Strings.C2">
         	<settingConfig type="Password" required="false"></settingConfig>
         </setting>
 		<setting propertyKey="@Properties.plantid" title="@Strings.PI">

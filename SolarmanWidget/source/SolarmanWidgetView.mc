@@ -5,6 +5,7 @@ using Toybox.Time;
 using Toybox.Time.Gregorian;
 using Toybox.Communications;
 using Toybox.System;
+using Toybox.Cryptography;
 
 // Commands from the delegate
 var DOWEBREQUEST=1;
@@ -41,11 +42,11 @@ var pwrd as String = "-";
 function NextPage()
 {
     // Next Page pressed, increase the pagenumber
-    $.currPage++;
+    currPage++;
 
     // Rotate is last page = met
-    if ($.currPage>6) {
-        $.currPage=1;
+    if (currPage>6) {
+        currPage=1;
     }
 
     // refresh the screen
@@ -55,11 +56,11 @@ function NextPage()
 function PreviousPage()
 {
     // Previous Page pressed, decrease the pagenumber
-    $.currPage--;
+    currPage--;
 
     // Rotate is last page = met
-    if ($.currPage<1) {
-        $.currPage=6;
+    if (currPage<1) {
+        currPage=6;
     }
 
     // refresh the screen
@@ -69,7 +70,7 @@ function PreviousPage()
 function RefreshPage()
 {
     WatchUi.requestUpdate();
-    $.fUpdt = true;
+    fUpdt = true;
 }
 
 class SolarmanWidgetView extends WatchUi.View {
@@ -88,32 +89,32 @@ class SolarmanWidgetView extends WatchUi.View {
 function retrieveSettings() {
         ////System.println("SolarmanWidgetView:retrieveSettings");
         // Get Username From settings
-        $.usr = Application.getApp().getProperty("PUN");
+        usr = Application.getApp().getProperty("PUN");
         ////System.println("Username: " + Username);
 
         // Get Password from Settings
-        $.pwrd = Application.getApp().getProperty("PPS");
+        pwrd = Application.getApp().getProperty("PPS");
 
-        // Get $.curr Page From settings
-        $.currPage= Application.getApp().getProperty("PSP");
-        if($.currPage == null){$.currPage=1;}
+        // Get curr Page From settings
+        currPage= Application.getApp().getProperty("PSP");
+        if(currPage == null){currPage=1;}
 
         // Get the accesstoken
-        $.accessToken=Application.getApp().getProperty("ACT");
-//        if($.accessToken == null){$.accessToken = null};
+        accessToken=Application.getApp().getProperty("ACT");
+//        if(accessToken == null){accessToken = null};
 
-        // Get the $.plantid
-        $.plantid=Application.getApp().getProperty("PPI");
-        if($.plantid == null){$.plantid = -1;}
-        if($.plantid instanceof String){$.plantid = -1;}
+        // Get the plantid
+        plantid=Application.getApp().getProperty("PPI");
+        if(plantid == null){plantid = -1;}
+        if(plantid instanceof String){plantid = -1;}
 
         //Allow to update credentials (gSettingsChanged will be set to true which calls this function twice)
-        if(Application.getApp().getProperty("currUsr") != "" && $.usr != Application.getApp().getProperty("currUsr")){$.accessToken = "";$.plantid = -1;}
-        if(Application.getApp().getProperty("currPwrd") != "" && $.pwrd != Application.getApp().getProperty("currPwrd")){$.accessToken = "";$.plantid = -1;}
+        if(Application.getApp().getProperty("currUsr") != "" && usr != Application.getApp().getProperty("currUsr")){accessToken = "";plantid = -1;}
+        if(Application.getApp().getProperty("currPwrd") != "" && pwrd != Application.getApp().getProperty("currPwrd")){accessToken = "";plantid = -1;}
 
         // Set initial glanceVal
-        $.glanceName = Application.getApp().getProperty("AppName");
-        $.glanceVal = "";
+        glanceName = Application.getApp().getProperty("AppName");
+        glanceVal = "";
     }
 
     function toMoment(string)
@@ -179,41 +180,41 @@ function retrieveSettings() {
         ////System.println("SolarmanWidgetView:procRespCode");
 
         // Turn off refreshpage
-        $.showRefrsh=false;
-        $.showErr=false;
+        showRefrsh=false;
+        showErr=false;
         ////System.println(rspCode);
         ////System.println(data);
 
         if (rspCode==200)
         {
             //Nothing, just continue
-            $.showErr=false;
+            showErr=false;
         }
         else if (rspCode==-104) //Communications.BLE_CONNECTION_UNAVAILABLE
         {
             // bluetooth connection issue
-            $.showErr = true;
-            $.errStr1=WatchUi.loadResource(Rez.Strings.B1);
-            $.errStr2=WatchUi.loadResource(Rez.Strings.B2);
-            $.errStr3=WatchUi.loadResource(Rez.Strings.B3);
+            showErr = true;
+            errStr1=WatchUi.loadResource(Rez.Strings.B1);
+            errStr2=WatchUi.loadResource(Rez.Strings.B2);
+            errStr3=WatchUi.loadResource(Rez.Strings.B3);
             data=null;
         }
         else if (rspCode==-400) //Communications.INVALID_HTTP_BODY_IN_NETWORK_RESPONSE
         {
             // Invalid API key
-            $.showErr = true;
-            $.errStr1=WatchUi.loadResource(Rez.Strings.I1);
-            $.errStr2=WatchUi.loadResource(Rez.Strings.I2);
-            $.errStr3=WatchUi.loadResource(Rez.Strings.I3);
+            showErr = true;
+            errStr1=WatchUi.loadResource(Rez.Strings.I1);
+            errStr2=WatchUi.loadResource(Rez.Strings.I2);
+            errStr3=WatchUi.loadResource(Rez.Strings.I3);
             data=null;
         }
         else if (rspCode==-300) //Communications.NETWORK_REQUEST_TIMED_OUT
         {
             // No Internet
-            $.showErr = true;
-            $.errStr1=WatchUi.loadResource(Rez.Strings.N1);
-            $.errStr2=WatchUi.loadResource(Rez.Strings.N2);
-            $.errStr3=WatchUi.loadResource(Rez.Strings.N3);
+            showErr = true;
+            errStr1=WatchUi.loadResource(Rez.Strings.N1);
+            errStr2=WatchUi.loadResource(Rez.Strings.N2);
+            errStr3=WatchUi.loadResource(Rez.Strings.N3);
             data=null;
         }
         else if (rspCode==412)
@@ -221,40 +222,40 @@ function retrieveSettings() {
             if(data["result"] == null || data["error"].length > 0)
             {
                 // Reset values to reinitiate login
-                $.showErr=true;
-                $.accessToken = "";
-                $.plantid = -1;
+                showErr=true;
+                accessToken = "";
+                plantid = -1;
                 Application.getApp().setProperty("PPI",0);
-                $.errStr1="API Error: "+ data["error_description"];
+                errStr1="API Error: "+ data["error_description"];
                 if(data["error_description"] == "invalid_token" || data["code"] == "AUTH_INVALID_USERNAME_OR_PASSWORD"){
-                    $.errStr2=WatchUi.loadResource(Rez.Strings.A1);
-                    $.errStr3=WatchUi.loadResource(Rez.Strings.A2);
-                    $.errStr4=WatchUi.loadResource(Rez.Strings.A3);
+                    errStr2=WatchUi.loadResource(Rez.Strings.A1);
+                    errStr3=WatchUi.loadResource(Rez.Strings.A2);
+                    errStr4=WatchUi.loadResource(Rez.Strings.A3);
                 }
                 else{
-                    $.errStr2=WatchUi.loadResource(Rez.Strings.I1);
-                    $.errStr3=WatchUi.loadResource(Rez.Strings.I2);
-                    $.errStr4=WatchUi.loadResource(Rez.Strings.I3);
+                    errStr2=WatchUi.loadResource(Rez.Strings.I1);
+                    errStr3=WatchUi.loadResource(Rez.Strings.I2);
+                    errStr4=WatchUi.loadResource(Rez.Strings.I3);
                 }
                 data=null;
             }
             else{
-                $.showErr = true;
-                $.errStr1="Error "+rspCode;
-                $.errStr2=WatchUi.loadResource(Rez.Strings.E1);
-                $.errStr3=WatchUi.loadResource(Rez.Strings.E2);
-                $.errStr4=WatchUi.loadResource(Rez.Strings.E3);
+                showErr = true;
+                errStr1="Error "+rspCode;
+                errStr2=WatchUi.loadResource(Rez.Strings.E1);
+                errStr3=WatchUi.loadResource(Rez.Strings.E2);
+                errStr4=WatchUi.loadResource(Rez.Strings.E3);
             }
         }
         else{
-            $.showErr = true;
-            $.errStr1="Error "+rspCode;
-            $.errStr2=WatchUi.loadResource(Rez.Strings.E1);
-            $.errStr3=WatchUi.loadResource(Rez.Strings.E2);
-            $.errStr4=WatchUi.loadResource(Rez.Strings.E3);
+            showErr = true;
+            errStr1="Error "+rspCode;
+            errStr2=WatchUi.loadResource(Rez.Strings.E1);
+            errStr3=WatchUi.loadResource(Rez.Strings.E2);
+            errStr4=WatchUi.loadResource(Rez.Strings.E3);
         }
         WatchUi.requestUpdate();
-        return $.showErr;
+        return showErr;
     }
 
     function frmtScrLines(ln1val,ln2val,ln3val,ln4val,ln5val,lines,dc){
@@ -348,14 +349,14 @@ function retrieveSettings() {
     function setNotParsable()
     {
         // not parsable
-        $.curr = null;
-        $.today = null;
-        $.thisMonth = null;
-        $.thisYear = null;
-        $.total = null;
-        $.lstUpd = null;
-        $.lastUpdTmLocal = null;
-        $.lastUpdDtLocal = null;
+        curr = null;
+        today = null;
+        thisMonth = null;
+        thisYear = null;
+        total = null;
+        lstUpd = null;
+        lastUpdTmLocal = null;
+        lastUpdDtLocal = null;
     }
 
     // Handle Command from Delegate view
@@ -373,24 +374,28 @@ function retrieveSettings() {
         //System.println("makeReq");
         //System.println("makeReq uid:"+uid);
 
-        $.fUpdt = false;
+        fUpdt = false;
         // Show refreshing page
-        $.showErr=false; // turn off an error screen (if any)
-        $.showRefrsh=true; // make sure refreshingscreen is shown when UP the UI.
+        showErr=false; // turn off an error screen (if any)
+        showRefrsh=true; // make sure refreshingscreen is shown when UP the UI.
         WatchUi.requestUpdate();
-        var url = $.baseUrl+"/oauth-s/oauth/token";
+        var url = baseUrl+"/oauth-s/oauth/token";
 
-        // only retrieve the settings if they've actually changed
+        // hash password to SHA256
+        var pwrd_byte_array = Conversion.StringToByteArray(pwrd);
+        var sha256hash = Hash.NewSha256HashObject();
+        var sha256hash_bytes = Hash.ComputeHash(sha256hash,pwrd_byte_array);
+        var hashedpassword = Conversion.ByteArrayToHexString(sha256hash_bytes);
 
         // Make the authentication request
         //System.println("makeReq url: "+url);
         Communications.makeWebRequest(url,{
             "system"=>"SOLARMAN",
             "grant_type"=>"password",
-            "username"=> $.usr,
-            "password"=>"TODO",
+            "username"=> usr,
+            "password"=> hashedpassword,
             "client_id"=>"test",
-            "clear_text_pwd"=> $.pwrd,
+            "clear_text_pwd"=> pwrd,
             "identity_type"=>2
         },
         {
@@ -408,14 +413,14 @@ function retrieveSettings() {
     function onRec(rspCode, data)
     {
         //System.println("onRec");
-        $.showErr = procRespCode(rspCode,data);
+        showErr = procRespCode(rspCode,data);
 
         if(showErr){
             WatchUi.requestUpdate();
         }
         else{
-            $.showErr=false;
-            $.accessToken = "Bearer " + data["access_token"];
+            showErr=false;
+            accessToken = "Bearer " + data["access_token"];
             Application.getApp().setProperty("ACCESSTOKEN","Bearer " + data["access_token"]);
             Application.getApp().setProperty("REFRESHTOKEN",data["refresh_token"]);
             makeReqPlantId();
@@ -427,9 +432,9 @@ function retrieveSettings() {
 
         // Show refreshing page
 
-            $.showRefrsh=true; // make sure refreshingscreen is shown when UP the UI.
+            showRefrsh=true; // make sure refreshingscreen is shown when UP the UI.
             WatchUi.requestUpdate();
-            var url = $.baseUrl+"/maintain-s/operating/station/search?page=1&size=10&order.direction=ASC&order.property=name";
+            var url = baseUrl+"/maintain-s/operating/station/search?page=1&size=10&order.direction=ASC&order.property=name";
 
             // Make the authentication request
             //System.println("makeReqPlantId url:"+url);
@@ -459,38 +464,38 @@ function retrieveSettings() {
     function onRecPlantId(rspCode, data)
     {
         //System.println("onRecPlantId ");
-        $.showErr = procRespCode(rspCode,data);
+        showErr = procRespCode(rspCode,data);
 
         if(showErr){
             WatchUi.requestUpdate();
         }
         else{
-            $.plantid = data["data"][0]["id"];
-            Application.getApp().setProperty("plantid",$.plantid);
+            plantid = data["data"][0]["id"];
+            Application.getApp().setProperty("plantid",plantid);
 
-            // Format $.curr
-            $.curr = frmtEnergy(data["data"][0]["generationPower"].toFloat());
-            //System.println("$.curr: "+$.curr);
+            // Format curr
+            curr = frmtEnergy(data["data"][0]["generationPower"].toFloat());
+            //System.println("curr: "+curr);
 
-            // Format $.today
-            $.today = frmtEnergy(data["data"][0]["generationValue"].toFloat());
-            //System.println("$.today: "+$.today);
+            // Format today
+            today = frmtEnergy(data["data"][0]["generationValue"].toFloat());
+            //System.println("today: "+today);
 
             // Format Month
-            $.thisMonth = frmtEnergy(data["data"][0]["generationMonth"].toFloat());
-            //System.println("$.thisMonth: "+$.thisMonth);
+            thisMonth = frmtEnergy(data["data"][0]["generationMonth"].toFloat());
+            //System.println("thisMonth: "+thisMonth);
 
             // Format Year
-            $.thisYear = frmtEnergy(data["data"][0]["generationYear"].toFloat());
-            //System.println("$.thisYear: "+$.thisYear);
+            thisYear = frmtEnergy(data["data"][0]["generationYear"].toFloat());
+            //System.println("thisYear: "+thisYear);
 
-            // Format $.total
-            $.total = frmtEnergy(data["data"][0]["generationTotal"].toFloat());
-            //System.println("$.total: "+$.total);
+            // Format total
+            total = frmtEnergy(data["data"][0]["generationTotal"].toFloat());
+            //System.println("total: "+total);
 
             // Format Last Update
             var lastUpdateObject = Gregorian.utcInfo((new Time.Moment(data["data"][0]["lastUpdateTime"].toNumber())),Time.FORMAT_SHORT);
-            $.lstUpd = Lang.format("$1$-$2$-$3$ $4$:$5$:$6$", [
+            lstUpd = Lang.format("$1$-$2$-$3$ $4$:$5$:$6$", [
                 lastUpdateObject.year.format("%04u"),
                 lastUpdateObject.month.format("%02u"),
                 lastUpdateObject.day.format("%02u"),
@@ -498,8 +503,8 @@ function retrieveSettings() {
                 lastUpdateObject.min.format("%02u"),
                 lastUpdateObject.sec.format("%02u")
             ]);
-            $.lastUpdTmLocal = frmtTmFromRFC3339($.lstUpd);
-            $.lastUpdDtLocal = frmtDtFromRFC3339($.lstUpd);
+            lastUpdTmLocal = frmtTmFromRFC3339(lstUpd);
+            lastUpdDtLocal = frmtDtFromRFC3339(lstUpd);
 
             WatchUi.requestUpdate();
         }
@@ -517,14 +522,14 @@ function retrieveSettings() {
         //Sys.println("SolarmanWidgetView:onShow");
 
         //  Load saved data
-        $.curr = Application.getApp().getProperty("$.curr");
-        $.today = Application.getApp().getProperty("$.today");
-        $.thisMonth = Application.getApp().getProperty("$.thisMonth");
-        $.thisYear = Application.getApp().getProperty("$.thisYear");
-        $.total = Application.getApp().getProperty("$.total");
-        $.lstUpd= Application.getApp().getProperty("lstUpd");
-        $.lastUpdTmLocal = Application.getApp().getProperty("$.lastUpdTmLocal");
-        $.lastUpdDtLocal = Application.getApp().getProperty("$.lastUpdDtLocal");
+        curr = Application.getApp().getProperty("curr");
+        today = Application.getApp().getProperty("today");
+        thisMonth = Application.getApp().getProperty("thisMonth");
+        thisYear = Application.getApp().getProperty("thisYear");
+        total = Application.getApp().getProperty("total");
+        lstUpd= Application.getApp().getProperty("lstUpd");
+        lastUpdTmLocal = Application.getApp().getProperty("lastUpdTmLocal");
+        lastUpdDtLocal = Application.getApp().getProperty("lastUpdDtLocal");
         makeReq();
     }
 
@@ -535,8 +540,8 @@ function retrieveSettings() {
         //Sys.println("Screen heigth: " + dc.getHeight());
         //Sys.println("Screen width: " + dc.getWidth());
 
-        if ($.gSettingsChanged) {
-            $.gSettingsChanged = false;
+        if (gSettingsChanged) {
+            gSettingsChanged = false;
             retrieveSettings();
         }
 
@@ -553,19 +558,19 @@ function retrieveSettings() {
         ////Sys.println("logowidth: " + logowidth + " logoHeight: " + logo.getHeight());
         //dc.drawBitmap((dc.getWidth() - logowidth) / 2, logoPosY,logo);
 
-        if ($.showErr) {
+        if (showErr) {
            // Show Error
             frmtScrLines(
-                $.errStr1,
-                $.errStr2,
-                $.errStr3,
-                $.errStr4,
+                errStr1,
+                errStr2,
+                errStr3,
+                errStr4,
                 "",
                 5,
                 dc
             );
         }
-        else  if ($.showRefrsh) {
+        else  if (showRefrsh) {
             frmtScrLines(
                 WatchUi.loadResource(Rez.Strings.UP),
                 "",
@@ -578,83 +583,83 @@ function retrieveSettings() {
         }
         else {
             // Show status page
-                if($.currPage==1){
-                    // $.curr pwr
+                if(currPage==1){
+                    // curr pwr
                     frmtScrLines(
                         WatchUi.loadResource(Rez.Strings.O1),
-                        $.curr,
-                        $.lastUpdTmLocal,
-                        $.lastUpdDtLocal,
+                        curr,
+                        lastUpdTmLocal,
+                        lastUpdDtLocal,
                         "",
                         4,
                         dc
                     );
-                    $.glanceName = WatchUi.loadResource(Rez.Strings.O1);
-                    $.glanceVal = $.curr;
+                    glanceName = WatchUi.loadResource(Rez.Strings.O1);
+                    glanceVal = curr;
                 }
-                if($.currPage==2){
-                    // $.today
+                if(currPage==2){
+                    // today
                     frmtScrLines(
                         WatchUi.loadResource(Rez.Strings.O2),
-                        $.today,
-                        $.lastUpdTmLocal,
-                        $.lastUpdDtLocal,
+                        today,
+                        lastUpdTmLocal,
+                        lastUpdDtLocal,
                         "",
                         4,
                         dc
                     );
-                    $.glanceName = WatchUi.loadResource(Rez.Strings.O2);
-                    $.glanceVal = $.today;
+                    glanceName = WatchUi.loadResource(Rez.Strings.O2);
+                    glanceVal = today;
                 }
-                if($.currPage==3){
+                if(currPage==3){
                     // This Month
                     frmtScrLines(
                         WatchUi.loadResource(Rez.Strings.O3),
-                        $.thisMonth,
-                        $.lastUpdTmLocal,
-                        $.lastUpdDtLocal,
+                        thisMonth,
+                        lastUpdTmLocal,
+                        lastUpdDtLocal,
                         "",
                         4,
                         dc
                     );
-                    $.glanceName = WatchUi.loadResource(Rez.Strings.O3);
-                    $.glanceVal = $.thisMonth;
+                    glanceName = WatchUi.loadResource(Rez.Strings.O3);
+                    glanceVal = thisMonth;
                 }
-                if($.currPage==4){
+                if(currPage==4){
                     // This Year
                     frmtScrLines(
                         WatchUi.loadResource(Rez.Strings.O4),
-                        $.thisYear,
-                        $.lastUpdTmLocal,
-                        $.lastUpdDtLocal,
+                        thisYear,
+                        lastUpdTmLocal,
+                        lastUpdDtLocal,
                         "",
                         4,
                         dc
                     );
-                    $.glanceName = WatchUi.loadResource(Rez.Strings.O4);
-                    $.glanceVal = $.thisYear;
+                    glanceName = WatchUi.loadResource(Rez.Strings.O4);
+                    glanceVal = thisYear;
                 }
-                if($.currPage==5){
-                    // $.total
+                if(currPage==5){
+                    // total
                     frmtScrLines(
                         WatchUi.loadResource(Rez.Strings.O5),
-                        $.total,
-                        $.lastUpdTmLocal,
-                        $.lastUpdDtLocal,
+                        total,
+                        lastUpdTmLocal,
+                        lastUpdDtLocal,
                         "",
                         4,
                         dc
                     );
-                    $.glanceName = WatchUi.loadResource(Rez.Strings.O5);
-                    $.glanceVal = $.total;
+                    glanceName = WatchUi.loadResource(Rez.Strings.O5);
+                    glanceVal = total;
                 }
-                if($.currPage==6){
+                if(currPage==6){
                     frmtScrLines(
-                        WatchUi.loadResource(Rez.Strings.O1)+": "+$.curr,
-                        WatchUi.loadResource(Rez.Strings.O2)+": "+$.today,
-                        WatchUi.loadResource(Rez.Strings.O3)+": "+$.thisMonth,
-                        WatchUi.loadResource(Rez.Strings.O4)+": "+$.thisYear,
-                        WatchUi.loadResource(Rez.Strings.O5)+": "+$.total,
+                        WatchUi.loadResource(Rez.Strings.O1)+": "+curr,
+                        WatchUi.loadResource(Rez.Strings.O2)+": "+today,
+                        WatchUi.loadResource(Rez.Strings.O3)+": "+thisMonth,
+                        WatchUi.loadResource(Rez.Strings.O4)+": "+thisYear,
+                        WatchUi.loadResource(Rez.Strings.O5)+": "+total,
                         5,
                         dc
                     );
@@ -662,8 +667,8 @@ function retrieveSettings() {
 
             ////System.println("glanceVal: " + glanceVal + ", glanceName: " + glanceName );
 
-            if($.fUpdt == true){
-                ////System.println("$.fUpdt = " + $.fUpdt);
+            if(fUpdt == true){
+                ////System.println("fUpdt = " + fUpdt);
                 makeReq();
             }
         }
@@ -674,17 +679,17 @@ function retrieveSettings() {
     function onHide() {
 
         // Save data for later
-        Application.getApp().setProperty("curr",$.curr);
-        Application.getApp().setProperty("today", $.today);
-        Application.getApp().setProperty("thisMonth", $.thisMonth);
-        Application.getApp().setProperty("thisYear", $.thisYear);
-        Application.getApp().setProperty("total",$.total);
-        Application.getApp().setProperty("lstUpd", $.lstUpd);
-        Application.getApp().setProperty("lastUpdTmLocal", $.lastUpdTmLocal);
-        Application.getApp().setProperty("lastUpdDtLocal", $.lastUpdDtLocal);
-        Application.getApp().setProperty("glanceName", $.glanceName);
-        Application.getApp().setProperty("glanceVal", $.glanceVal);
-        Application.getApp().setProperty("currusr", $.usr);
+        Application.getApp().setProperty("curr",curr);
+        Application.getApp().setProperty("today", today);
+        Application.getApp().setProperty("thisMonth", thisMonth);
+        Application.getApp().setProperty("thisYear", thisYear);
+        Application.getApp().setProperty("total",total);
+        Application.getApp().setProperty("lstUpd", lstUpd);
+        Application.getApp().setProperty("lastUpdTmLocal", lastUpdTmLocal);
+        Application.getApp().setProperty("lastUpdDtLocal", lastUpdDtLocal);
+        Application.getApp().setProperty("glanceName", glanceName);
+        Application.getApp().setProperty("glanceVal", glanceVal);
+        Application.getApp().setProperty("currusr", usr);
         Application.getApp().setProperty("currPwrd", pwrd);
     }
 }
