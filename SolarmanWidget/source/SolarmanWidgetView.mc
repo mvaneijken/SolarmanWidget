@@ -370,6 +370,45 @@ function retrieveSettings() {
         }
     }
 
+    function encoding_utf8_getbytes(plain_text) {
+        return StringUtil.convertEncodedString(plain_text, {
+            :fromRepresentation => StringUtil.REPRESENTATION_STRING_PLAIN_TEXT,
+            :toRepresentation => StringUtil.REPRESENTATION_BYTE_ARRAY,
+            :encoding => StringUtil.CHAR_ENCODING_UTF8
+        });
+    }
+
+    function new_sha256hash() {
+        return new Cryptography.Hash({
+            :algorithm => Cryptography.HASH_SHA256
+        });
+    }
+
+    function computehash(hash, byte_array) {
+        hash.update(byte_array);
+        return hash.digest();
+    }
+
+    function convert_bytearray_tostring(byte_array) {
+        return StringUtil.convertEncodedString(byte_array, {
+            :fromRepresentation => StringUtil.REPRESENTATION_BYTE_ARRAY,
+            :toRepresentation => StringUtil.REPRESENTATION_STRING_PLAIN_TEXT,
+            :encoding => StringUtil.CHAR_ENCODING_UTF8
+        });
+    }
+
+    function convert_bytearray_tostringbase64(byte_array) {
+        return StringUtil.convertEncodedString(byte_array, {
+            :fromRepresentation => StringUtil.REPRESENTATION_BYTE_ARRAY,
+            :toRepresentation => StringUtil.REPRESENTATION_STRING_BASE64,
+            :encoding => StringUtil.CHAR_ENCODING_UTF8
+        });
+    }
+
+    function convert_utf8array_tostring(utf8Array) {
+        return StringUtil.utf8ArrayToString(utf8Array);
+    }
+
     function makeReq() {
         //System.println("makeReq");
         //System.println("makeReq uid:"+uid);
@@ -382,25 +421,13 @@ function retrieveSettings() {
         var url = baseUrl+"/oauth-s/oauth/token";
 
         // hash password to SHA256
-        var hash = new Cryptography.Hash({
-           :algorithm => Toybox.Cryptography.HASH_SHA256
-        });
-        var pwrd_byte_array = StringUtil.convertEncodedString(pwrd,{
-            :fromRepresentation=>StringUtil.REPRESENTATION_STRING_PLAIN_TEXT,
-            :toRepresentation=>StringUtil.REPRESENTATION_BYTE_ARRAY,
-            :encoding=>StringUtil.CHAR_ENCODING_UTF8
-            });
-        hash.update(pwrd_byte_array);
-        hash.initialize({
-           :algorithm => Toybox.Cryptography.HASH_SHA256
-        });
-        var hasDigest = hash.digest();
-        var options = {
-            :fromRepresentation=>StringUtil.REPRESENTATION_BYTE_ARRAY,
-            :toRepresentation=>StringUtil.REPRESENTATION_STRING_PLAIN_TEXT,
-		    :encoding => StringUtil.CHAR_ENCODING_UTF8
-            };
-        var hashedpassword = StringUtil.convertEncodedString(hasDigest,options);
+        pwrd = "password";
+        var pwrd_byte_array = encoding_utf8_getbytes(pwrd);
+        var sha256hash = new_sha256hash();
+        var sha256hash_bytes = computehash(sha256hash,pwrd_byte_array);
+        var hashedpasswordbase64 = convert_bytearray_tostringbase64(sha256hash_bytes);
+        System.println("hashedpasswordbase64: " + hashedpasswordbase64);
+        var hashedpassword = convert_bytearray_tostring(sha256hash_bytes);
         System.println("hashedpassword: " + hashedpassword);
 
         // Make the authentication request
