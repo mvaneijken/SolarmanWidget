@@ -31,7 +31,7 @@ class Conversion {
 
 class Hash {
 
-        function NewSha256HashObject() {
+    function NewSha256HashObject() {
         return new Cryptography.Hash({
             :algorithm => Cryptography.HASH_SHA256
         });
