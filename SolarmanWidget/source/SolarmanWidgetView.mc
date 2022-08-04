@@ -82,7 +82,7 @@ class SolarmanWidgetView extends WatchUi.View {
         //System.println("getDevicePartNumber: " + System.getDeviceSettings().deviceSettings.partNumber);
         retrieveSettings();
         View.initialize();
-        //logo = WatchUi.loadResource(Rez.Drawables.SolarmanLogo);
+        //logo = WatchUi.loadResource(Rez.Drawables.solarmanlogo);
         //icon = WatchUi.loadResource(Rez.Drawables.SolarmanIcon);
     }
 
