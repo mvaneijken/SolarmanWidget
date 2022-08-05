@@ -157,22 +157,35 @@ function retrieveSettings() {
 
     }
 
-    function frmtEnergy(power)
+    function frmtEnergy(power, inputunit)
     {
 
-        if (power<1)
-        {
-        // Less than 1 kWh Present in Wh
-            return (power * 1000).toNumber() + " Wh";
-        }
-        else if (power<1000)
-        {
-            // > more than kWh, so present in in kWh
-            return power.format("%.1f") + " kWh";
+        if(null != inputunit && inputunit.equals("W")){
+            if (power<1000)
+            {
+                // > more than kWh, so present in in kWh
+                return power.format("%.1f") + " Wh";
+            }
+            else{
+                // > more than kWh, so present in in kWh
+                return (power / 1000).toFloat().format("%.2f") + " kWh";
+            }
         }
         else{
-            // > more than kWh, so present in in kWh
-            return (power / 1000).toFloat().format("%.2f") + " MWh";
+            if (power<1)
+            {
+            // Less than 1 kWh Present in Wh
+                return (power * 1000).toNumber() + " Wh";
+            }
+            else if (power<1000)
+            {
+                // > more than kWh, so present in in kWh
+                return power.format("%.1f") + " kWh";
+            }
+            else{
+                // > more than kWh, so present in in kWh
+                return (power / 1000).toFloat().format("%.2f") + " MWh";
+            }
         }
     }
 
@@ -474,23 +487,23 @@ function retrieveSettings() {
             Application.getApp().setProperty("plantid",plantid);
 
             // Format curr
-            curr = frmtEnergy(data["data"][0]["generationPower"].toFloat());
+            curr = frmtEnergy(data["data"][0]["generationPower"].toFloat(),"W");
             //System.println("curr: "+curr);
 
             // Format today
-            today = frmtEnergy(data["data"][0]["generationValue"].toFloat());
+            today = frmtEnergy(data["data"][0]["generationValue"].toFloat(), null);
             //System.println("today: "+today);
 
             // Format Month
-            thisMonth = frmtEnergy(data["data"][0]["generationMonth"].toFloat());
+            thisMonth = frmtEnergy(data["data"][0]["generationMonth"].toFloat(), null);
             //System.println("thisMonth: "+thisMonth);
 
             // Format Year
-            thisYear = frmtEnergy(data["data"][0]["generationYear"].toFloat());
+            thisYear = frmtEnergy(data["data"][0]["generationYear"].toFloat(), null);
             //System.println("thisYear: "+thisYear);
 
             // Format total
-            total = frmtEnergy(data["data"][0]["generationTotal"].toFloat());
+            total = frmtEnergy(data["data"][0]["generationTotal"].toFloat(), null);
             //System.println("total: "+total);
 
             // Format Last Update
