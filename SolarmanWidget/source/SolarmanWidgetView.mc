@@ -160,32 +160,37 @@ function retrieveSettings() {
     function frmtEnergy(power, inputunit)
     {
 
-        if(null != inputunit && inputunit.equals("W")){
-            if (power<1000)
-            {
-                // > more than kWh, so present in in kWh
-                return power.format("%.1f") + " Wh";
+        if(power != null){
+            if(null != inputunit && inputunit.equals("W")){
+                if (power<1000)
+                {
+                    // > more than kWh, so present in in kWh
+                    return power.format("%.1f") + " Wh";
+                }
+                else{
+                    // > more than kWh, so present in in kWh
+                    return (power / 1000).toFloat().format("%.2f") + " kWh";
+                }
             }
             else{
-                // > more than kWh, so present in in kWh
-                return (power / 1000).toFloat().format("%.2f") + " kWh";
+                if (power<1)
+                {
+                // Less than 1 kWh Present in Wh
+                    return (power * 1000).toNumber() + " Wh";
+                }
+                else if (power<1000)
+                {
+                    // > more than kWh, so present in in kWh
+                    return power.format("%.1f") + " kWh";
+                }
+                else{
+                    // > more than kWh, so present in in kWh
+                    return (power / 1000).toFloat().format("%.2f") + " MWh";
+                }
             }
         }
         else{
-            if (power<1)
-            {
-            // Less than 1 kWh Present in Wh
-                return (power * 1000).toNumber() + " Wh";
-            }
-            else if (power<1000)
-            {
-                // > more than kWh, so present in in kWh
-                return power.format("%.1f") + " kWh";
-            }
-            else{
-                // > more than kWh, so present in in kWh
-                return (power / 1000).toFloat().format("%.2f") + " MWh";
-            }
+            return "0.0 Wh"
         }
     }
 
