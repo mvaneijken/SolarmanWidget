@@ -159,33 +159,44 @@ function retrieveSettings() {
 
     function frmtEnergy(power, inputunit)
     {
+        try{
+            power = power.toFloat();
+        }
+        catch(ex){
+            power = 0;
+        }
 
-        if(null != inputunit && inputunit.equals("W")){
-            if (power<1000)
-            {
-                // > more than kWh, so present in in kWh
-                return power.format("%.1f") + " Wh";
+        if(power != null){
+            if(null != inputunit && inputunit.equals("W")){
+                if (power<1000)
+                {
+                    // > more than kWh, so present in in kWh
+                    return power.format("%.1f") + " Wh";
+                }
+                else{
+                    // > more than kWh, so present in in kWh
+                    return (power / 1000).toFloat().format("%.2f") + " kWh";
+                }
             }
             else{
-                // > more than kWh, so present in in kWh
-                return (power / 1000).toFloat().format("%.2f") + " kWh";
+                if (power<1)
+                {
+                // Less than 1 kWh Present in Wh
+                    return (power * 1000).toNumber() + " Wh";
+                }
+                else if (power<1000)
+                {
+                    // > more than kWh, so present in in kWh
+                    return power.format("%.1f") + " kWh";
+                }
+                else{
+                    // > more than kWh, so present in in kWh
+                    return (power / 1000).toFloat().format("%.2f") + " MWh";
+                }
             }
         }
         else{
-            if (power<1)
-            {
-            // Less than 1 kWh Present in Wh
-                return (power * 1000).toNumber() + " Wh";
-            }
-            else if (power<1000)
-            {
-                // > more than kWh, so present in in kWh
-                return power.format("%.1f") + " kWh";
-            }
-            else{
-                // > more than kWh, so present in in kWh
-                return (power / 1000).toFloat().format("%.2f") + " MWh";
-            }
+            return "0.0 Wh";
         }
     }
 
@@ -483,42 +494,46 @@ function retrieveSettings() {
             WatchUi.requestUpdate();
         }
         else{
-            plantid = data["data"][0]["id"];
-            Application.getApp().setProperty("plantid",plantid);
+            if (data instanceof Dictionary){
+                plantid = data["data"][0]["id"];
+                Application.getApp().setProperty("plantid",plantid);
 
-            // Format curr
-            curr = frmtEnergy(data["data"][0]["generationPower"].toFloat(),"W");
-            //System.println("curr: "+curr);
+                // Format curr
+                curr = frmtEnergy(data["data"][0]["generationPower"],"W");
+                //System.println("curr: "+curr);
 
-            // Format today
-            today = frmtEnergy(data["data"][0]["generationValue"].toFloat(), null);
-            //System.println("today: "+today);
+                // Format today
+                today = frmtEnergy(data["data"][0]["generationValue"], null);
+                //System.println("today: "+today);
 
-            // Format Month
-            thisMonth = frmtEnergy(data["data"][0]["generationMonth"].toFloat(), null);
-            //System.println("thisMonth: "+thisMonth);
+                // Format Month
+                thisMonth = frmtEnergy(data["data"][0]["generationMonth"], null);
+                //System.println("thisMonth: "+thisMonth);
 
-            // Format Year
-            thisYear = frmtEnergy(data["data"][0]["generationYear"].toFloat(), null);
-            //System.println("thisYear: "+thisYear);
+                // Format Year
+                thisYear = frmtEnergy(data["data"][0]["generationYear"], null);
+                //System.println("thisYear: "+thisYear);
 
-            // Format total
-            total = frmtEnergy(data["data"][0]["generationTotal"].toFloat(), null);
-            //System.println("total: "+total);
+                // Format total
+                total = frmtEnergy(data["data"][0]["generationTotal"], null);
+                //System.println("total: "+total);
 
-            // Format Last Update
-            var lastUpdateObject = Gregorian.utcInfo((new Time.Moment(data["data"][0]["lastUpdateTime"].toNumber())),Time.FORMAT_SHORT);
-            lstUpd = Lang.format("$1$-$2$-$3$ $4$:$5$:$6$", [
-                lastUpdateObject.year.format("%04u"),
-                lastUpdateObject.month.format("%02u"),
-                lastUpdateObject.day.format("%02u"),
-                lastUpdateObject.hour.format("%02u"),
-                lastUpdateObject.min.format("%02u"),
-                lastUpdateObject.sec.format("%02u")
-            ]);
-            lastUpdTmLocal = frmtTmFromRFC3339(lstUpd);
-            lastUpdDtLocal = frmtDtFromRFC3339(lstUpd);
-
+                // Format Last Update
+                var lastUpdateObject = Gregorian.utcInfo((new Time.Moment(data["data"][0]["lastUpdateTime"].toNumber())),Time.FORMAT_SHORT);
+                lstUpd = Lang.format("$1$-$2$-$3$ $4$:$5$:$6$", [
+                    lastUpdateObject.year.format("%04u"),
+                    lastUpdateObject.month.format("%02u"),
+                    lastUpdateObject.day.format("%02u"),
+                    lastUpdateObject.hour.format("%02u"),
+                    lastUpdateObject.min.format("%02u"),
+                    lastUpdateObject.sec.format("%02u")
+                ]);
+                lastUpdTmLocal = frmtTmFromRFC3339(lstUpd);
+                lastUpdDtLocal = frmtDtFromRFC3339(lstUpd);
+            }
+            else{
+                setNotParsable();
+            }
             WatchUi.requestUpdate();
         }
     }
