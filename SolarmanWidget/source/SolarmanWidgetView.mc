@@ -11,21 +11,35 @@ using Toybox.Cryptography;
 var DOWEBREQUEST=1;
 
 // Status screens vars
-var showRefrsh as Boolean = false;
-var showErr as Boolean = false;
-var errStr1 as String = "";
-var errStr2 as String = "";
-var errStr3 as String = "";
-var errStr4 as String = "";
+var showRefrsh = false;
+var showErr = false;
+var errStr1 = "";
+var errStr2 = "";
+var errStr3 = "";
+var errStr4 = "";
 
 // vars to remember
+var curr;
+var today;
+var thisMonth;
+var thisYear;
+var total;
+var lastUpdTmLocal;
+var lastUpdDtLocal;
+var lstUpd;
 var dataCenter;
 var baseUrl = "https://globalhomeappapi.solarmanpv.com";
+var userAgent = "okhttp/4.9.3";
+var accessToken;
+var plantid; //plant_id variable received when retrieving the plants.
+var glanceName = "";
+var glanceVal = "";
+var fUpdt = false;
 
 // Settings
 var currPage;
-var usr as String = "-";
-var pwrd as String = "-";
+var usr = "-";
+var pwrd = "-";
 
 function NextPage()
 {
@@ -75,6 +89,7 @@ class SolarmanWidgetView extends WatchUi.View {
     }
 
 function retrieveSettings() {
+
         ////System.println("SolarmanWidgetView:retrieveSettings");
         dataCenter = Application.getApp().getProperty("DC");
         ////System.println("dataCenter: " + dataCenter);
@@ -129,7 +144,7 @@ function retrieveSettings() {
     {
         ////System.println("SolisWidgetView:frmtDtFromRFC3339");
         ////System.println(string.toString());
-        var i as Time = Gregorian.info(toMoment(string), 0); //Time.FORMAT_SHORT
+        var i = Gregorian.info(toMoment(string), Time.FORMAT_SHORT); //Time.FORMAT_SHORT
 
         return (Lang.format("$1$-$2$-$3$", [
             i.day.format("%01u"),
@@ -142,7 +157,7 @@ function retrieveSettings() {
     {
         ////System.println("SolisWidgetView:frmtTmFromRFC3339");
         ////System.println(string.toString());
-        var i as Time = Gregorian.info(toMoment(string), 0); //Time.FORMAT_SHORT
+        var i = Gregorian.info(toMoment(string), Time.FORMAT_SHORT); //Time.FORMAT_SHORT
 
         return (Lang.format("$1$:$2$:$3$", [
             i.hour.format("%01u"),
@@ -269,7 +284,7 @@ function retrieveSettings() {
         else{
             showErr = true;
             if(rspCode == null){
-                rspCode = "unknown"
+                rspCode = "unknown";
             }
             errStr1="Error "+rspCode;
             errStr2=WatchUi.loadResource(Rez.Strings.E1);
@@ -283,45 +298,45 @@ function retrieveSettings() {
     function frmtScrLines(ln1val,ln2val,ln3val,ln4val,ln5val,lines,dc){
         ////System.println("SolarmanWidgetView:frmtScrLines");
 
-        var lnSpaceL as Number = 2;
-        var lnSpaceM as Float = 2.6;
-        var scrnDev as Number = lines - 1;
-        var ln1Font as Number = 13; //Graphics.FONT_SYSTEM_LARGE;
-        var ln2Font as Number = 0;
-        var ln3Font as Number = 0;
-        var ln4Font as Number = 0;
-        var ln5Font as Number = 0;
+        var lnSpaceL = 2;
+        var lnSpaceM = 2.6;
+        var scrnDev = lines - 1;
+        var ln1Font = 13; //Graphics.FONT_SYSTEM_LARGE;
+        var ln2Font = 0;
+        var ln3Font = 0;
+        var ln4Font = 0;
+        var ln5Font = 0;
         if(lines == 1 || lines == 2){
             scrnDev = 2;
         }
         if(lines >= 2){
-            ln1Font = 13; //Graphics.FONT_SYSTEM_LARGE;
-            ln2Font = 13; //Graphics.FONT_SYSTEM_LARGE;
+            ln1Font = Graphics.FONT_SYSTEM_LARGE; //Graphics.FONT_SYSTEM_LARGE;
+            ln2Font = Graphics.FONT_SYSTEM_LARGE; //Graphics.FONT_SYSTEM_LARGE;
         }
         if(lines >= 3){
-            ln1Font = 13; //Graphics.FONT_SYSTEM_LARGE;
-            ln2Font = 13; //Graphics.FONT_SYSTEM_LARGE;
-            ln3Font = 2; //Graphics.FONT_SMALL;
+            ln1Font = Graphics.FONT_SYSTEM_LARGE; //Graphics.FONT_SYSTEM_LARGE;
+            ln2Font = Graphics.FONT_SYSTEM_LARGE; //Graphics.FONT_SYSTEM_LARGE;
+            ln3Font = Graphics.FONT_SMALL; //Graphics.FONT_SMALL;
         }
         if(lines >= 4){
-            ln1Font = 13; //Graphics.FONT_SYSTEM_LARGE;
-            ln2Font = 13; //Graphics.FONT_SYSTEM_LARGE;
-            ln3Font = 2; //Graphics.FONT_SMALL;
-            ln4Font  = 2; //Graphics.FONT_SMALL;
+            ln1Font = Graphics.FONT_SYSTEM_LARGE; //Graphics.FONT_SYSTEM_LARGE;
+            ln2Font = Graphics.FONT_SYSTEM_LARGE; //Graphics.FONT_SYSTEM_LARGE;
+            ln3Font = Graphics.FONT_SMALL; //Graphics.FONT_SMALL;
+            ln4Font  = Graphics.FONT_SMALL; //Graphics.FONT_SMALL;
         }
         if(lines >= 5){
-            ln1Font = 3; //Graphics.FONT_MEDIUM;
-            ln2Font = 3; //Graphics.FONT_MEDIUM;
-            ln3Font = 3; //Graphics.FONT_MEDIUM;
-            ln4Font  = 3; //Graphics.FONT_MEDIUM;
-            ln5Font = 3; //Graphics.FONT_MEDIUM;
+            ln1Font = Graphics.FONT_MEDIUM; //Graphics.FONT_MEDIUM;
+            ln2Font = Graphics.FONT_MEDIUM; //Graphics.FONT_MEDIUM;
+            ln3Font = Graphics.FONT_MEDIUM; //Graphics.FONT_MEDIUM;
+            ln4Font  = Graphics.FONT_MEDIUM; //Graphics.FONT_MEDIUM;
+            ln5Font = Graphics.FONT_MEDIUM; //Graphics.FONT_MEDIUM;
             lnSpaceL = 2.6;
         }
-        var ln1PosY as Number = dc.getHeight() / scrnDev;
-        var ln2PosY as Number = ln1PosY + ((Graphics.getFontHeight(ln1Font) / lnSpaceM) + (Graphics.getFontHeight(ln1Font) / lnSpaceM));
-        var ln3PosY as Number = ln2PosY + ((Graphics.getFontHeight(ln2Font) / lnSpaceL) + (Graphics.getFontHeight(ln2Font) / lnSpaceL));
-        var ln4PosY as Number = ln3PosY + ((Graphics.getFontHeight(ln3Font) / lnSpaceM) + (Graphics.getFontHeight(ln3Font) / lnSpaceM));
-        var ln5PosY as Number = ln4PosY + ((Graphics.getFontHeight(ln4Font) / lnSpaceM) + (Graphics.getFontHeight(ln4Font) / lnSpaceM));
+        var ln1PosY = dc.getHeight() / scrnDev;
+        var ln2PosY = ln1PosY + ((Graphics.getFontHeight(ln1Font) / lnSpaceM) + (Graphics.getFontHeight(ln1Font) / lnSpaceM));
+        var ln3PosY = ln2PosY + ((Graphics.getFontHeight(ln2Font) / lnSpaceL) + (Graphics.getFontHeight(ln2Font) / lnSpaceL));
+        var ln4PosY = ln3PosY + ((Graphics.getFontHeight(ln3Font) / lnSpaceM) + (Graphics.getFontHeight(ln3Font) / lnSpaceM));
+        var ln5PosY = ln4PosY + ((Graphics.getFontHeight(ln4Font) / lnSpaceM) + (Graphics.getFontHeight(ln4Font) / lnSpaceM));
 
         dc.drawText(
             dc.getWidth() / 2,
@@ -432,7 +447,7 @@ function retrieveSettings() {
     }
 
     // Receive the data from the web request
-    function onRec(rspCode, data)
+    function onRec(rspCode as Lang.Number, data as Null or Lang.Dictionary or Lang.String) as Void    
     {
         //System.println("onRec");
         showErr = procRespCode(rspCode,data);
@@ -483,7 +498,7 @@ function retrieveSettings() {
         }
 
 
-    function onRecPlantId(rspCode, data)
+    function onRecPlantId(rspCode as Lang.Number, data as Null or Lang.Dictionary or Lang.String) as Void
     {
         //System.println("onRecPlantId ");
         showErr = procRespCode(rspCode,data);
