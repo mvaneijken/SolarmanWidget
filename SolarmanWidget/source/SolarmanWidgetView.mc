@@ -27,7 +27,7 @@ var total as Float;
 var lastUpdTmLocal as String;
 var lastUpdDtLocal as String;
 var lstUpd as String;
-var baseUrl as String = "https://api4home.solarmanpv.com";
+var userAgent as String = "okhttp/4.9.3";
 var accessToken as String;
 var plantid as Number; //plant_id variable received when retrieving the plants.
 var glanceName as String = "";
@@ -430,7 +430,7 @@ function retrieveSettings() {
                 :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON,
                 :headers => {
                     "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED,
-                    "User-Agent" => "okhttp/3.14.9",
+                    "User-Agent" => userAgent,
                     "Accept" => "application/json, text/plain, */*"
                 }
         },method(:onRec));
@@ -480,7 +480,7 @@ function retrieveSettings() {
                 :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON,
                 :headers => {
                     "Content-Type" => Communications.REQUEST_CONTENT_TYPE_JSON,
-                    "User-Agent" => "okhttp/3.14.9",
+                    "User-Agent" => userAgent,
                     "accept" => "application/json, text/plain, */*",
                     "Authorization" => Application.getApp().getProperty("ACCESSTOKEN")
                 }
