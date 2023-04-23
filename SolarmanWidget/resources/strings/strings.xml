@@ -10,8 +10,8 @@
     <string id="B3">with mobile phone</string>
 
     <string id="I1">Invalid settings</string>
-    <string id="I2">Configure correct settings at</string>
-    <string id="I3">Garmin Connect or Express</string>
+    <string id="I2">Validate in</string>
+    <string id="I3">App/Express</string>
 
     <string id="A1">Login fout</string>
     <string id="A2">Check Solarman</string>
@@ -36,6 +36,6 @@
     <string id="UI">Solarman User Identifier</string>
     <string id="PI">Solarman Site Identifier</string>
 
-    <string id="GL" scope="glance">Refresh needed</string>
+    <string id="GL" scope="glance">Open to refresh</string>
 
 </strings>
