@@ -38,4 +38,7 @@
 
     <string id="GL" scope="glance">Open widget</string>
     
+    <string id="DC">Datacentrum</string> 
+    <string id="D1">Global</string>    
+    <string id="D2">China</string>
 </strings>
