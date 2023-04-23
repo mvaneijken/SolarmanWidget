@@ -10,16 +10,16 @@
     <string id="B3">met telefoon</string>
 
     <string id="I1">Config fout</string>
-    <string id="I2">Controleer instellingen</string>
-    <string id="I3">Garmin Connect/Express</string>
+    <string id="I2">Controleer in</string>
+    <string id="I3">App/Express</string>
 
     <string id="A1">Login fout</string>
     <string id="A2">Check inloggegevens</string>
     <string id="A3">in app</string>
 
-    <string id="N1">Geen Internet"</string>
-    <string id="N2">Zet internetverbinding"</string>
-    <string id="N3">aan op telefoon"</string>
+    <string id="N1">Geen Internet</string>
+    <string id="N2">Controleer</string>
+    <string id="N3">op telefoon</string>
 
     <string id="SP">Startpagina</string>
     <string id="UP">Verversen...</string>
@@ -36,6 +36,6 @@
     <string id="UI">Solarman User Identifier</string>
     <string id="PI">Solarman Site Identifier</string>
 
-    <string id="GL" scope="glance">Verversen benodigd</string>
+    <string id="GL" scope="glance">Open widget</string>
     
 </strings>
