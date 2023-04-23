@@ -19,20 +19,8 @@ var errStr3 as String = "";
 var errStr4 as String = "";
 
 // vars to remember
-var curr as Float;
-var today as Float;
-var thisMonth as Float;
-var thisYear as Float;
-var total as Float;
-var lastUpdTmLocal as String;
-var lastUpdDtLocal as String;
-var lstUpd as String;
-var userAgent as String = "okhttp/4.9.3";
-var accessToken as String;
-var plantid as Number; //plant_id variable received when retrieving the plants.
-var glanceName as String = "";
-var glanceVal as String = "";
-var fUpdt as Boolean = false;
+var dataCenter;
+var baseUrl = "https://globalhomeappapi.solarmanpv.com";
 
 // Settings
 var currPage;
@@ -88,6 +76,13 @@ class SolarmanWidgetView extends WatchUi.View {
 
 function retrieveSettings() {
         ////System.println("SolarmanWidgetView:retrieveSettings");
+        dataCenter = Application.getApp().getProperty("DC");
+        ////System.println("dataCenter: " + dataCenter);
+        if(dataCenter == 2){
+            baseUrl = "https://homeappapi.solarmanpv.com";
+        }
+        ////System.println("baseUrl: " + baseUrl);
+        
         // Get Username From settings
         usr = Application.getApp().getProperty("PUN");
         ////System.println("Username: " + Username);
