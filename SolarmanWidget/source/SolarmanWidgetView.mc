@@ -196,7 +196,7 @@ function retrieveSettings() {
             }
         }
         else{
-            return "0.0 Wh";
+            return "No data received";
         }
     }
 
@@ -273,6 +273,9 @@ function retrieveSettings() {
         }
         else{
             showErr = true;
+            if(rspCode == null){
+                rspCode = "unknown"
+            }
             errStr1="Error "+rspCode;
             errStr2=WatchUi.loadResource(Rez.Strings.E1);
             errStr3=WatchUi.loadResource(Rez.Strings.E2);
