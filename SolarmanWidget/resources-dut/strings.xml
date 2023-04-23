@@ -36,5 +36,6 @@
     <string id="UI">Solarman User Identifier</string>
     <string id="PI">Solarman Site Identifier</string>
 
-    <string id="GL" scope="glance">Update nodig</string>
+    <string id="GL" scope="glance">Verversen benodigd</string>
+    
 </strings>
