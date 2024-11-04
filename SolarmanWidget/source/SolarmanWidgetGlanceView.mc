@@ -29,7 +29,7 @@ class SolarmanWidgetGlanceView extends WatchUi.GlanceView {
             lineTwoValue = WatchUi.loadResource(Rez.Strings.GL);
         }
 
-        var height = dc.getHeight();
+        //var height = dc.getHeight();
         var lineOnePosY = 0;
         var lineTwoPosY = lineOnePosY + ((fontHeight/2) + (fontHeight/2));
 
