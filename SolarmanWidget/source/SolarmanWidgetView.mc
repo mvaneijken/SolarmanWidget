@@ -24,6 +24,7 @@ var today;
 var thisMonth;
 var thisYear;
 var total;
+var batterySoc;
 var lastUpdTmLocal;
 var lastUpdDtLocal;
 var lstUpd;
@@ -32,6 +33,8 @@ var baseUrl = "https://globalhomeappapi.solarmanpv.com";
 var userAgent = "okhttp/4.9.3";
 var accessToken;
 var plantid; //plant_id variable received when retrieving the plants.
+var battery = false;
+
 var glanceName = "";
 var glanceVal = "";
 var fUpdt = false;
@@ -47,8 +50,15 @@ function NextPage()
     currPage++;
 
     // Rotate is last page = met
-    if (currPage>6) {
-        currPage=1;
+    if(battery == false){
+        if (currPage>6) {
+            currPage=1;
+        }
+    }
+    else{
+        if (currPage>7) {
+            currPage=1;
+        }
     }
 
     // refresh the screen
@@ -61,8 +71,15 @@ function PreviousPage()
     currPage--;
 
     // Rotate is last page = met
-    if (currPage<1) {
-        currPage=6;
+    if(battery == false){
+        if (currPage<1) {
+            currPage=6;
+        }
+    }
+    else{
+        if (currPage<1) {
+            currPage=7;
+        }
     }
 
     // refresh the screen
@@ -97,7 +114,7 @@ function retrieveSettings() {
             baseUrl = "https://homeappapi.solarmanpv.com";
         }
         ////System.println("baseUrl: " + baseUrl);
-        
+
         // Get Username From settings
         usr = Application.getApp().getProperty("PUN");
         ////System.println("Username: " + Username);
@@ -117,6 +134,11 @@ function retrieveSettings() {
         plantid=Application.getApp().getProperty("PPI");
         if(plantid == null){plantid = -1;}
         if(plantid instanceof String){plantid = -1;}
+
+        // Get the battery status
+        battery = Application.getApp().getProperty("BT");
+        if(battery == null){battery = false;}
+        if(battery instanceof String){battery = false;}
 
         //Allow to update credentials (gSettingsChanged will be set to true which calls this function twice)
         if(Application.getApp().getProperty("currUsr") != "" && usr != Application.getApp().getProperty("currUsr")){accessToken = "";plantid = -1;}
@@ -295,7 +317,7 @@ function retrieveSettings() {
         return showErr;
     }
 
-    function frmtScrLines(ln1val,ln2val,ln3val,ln4val,ln5val,lines,dc){
+    function frmtScrLines(ln1val,ln2val,ln3val,ln4val,ln5val,ln6val,lines,dc){
         ////System.println("SolarmanWidgetView:frmtScrLines");
 
         var lnSpaceL = 2;
@@ -306,6 +328,7 @@ function retrieveSettings() {
         var ln3Font = 0;
         var ln4Font = 0;
         var ln5Font = 0;
+        var ln6Font = 0;
         if(lines == 1 || lines == 2){
             scrnDev = 2;
         }
@@ -332,12 +355,21 @@ function retrieveSettings() {
             ln5Font = Graphics.FONT_MEDIUM; //Graphics.FONT_MEDIUM;
             lnSpaceL = 2.6;
         }
+        if(lines >= 6){
+            ln1Font = Graphics.FONT_MEDIUM; //Graphics.FONT_MEDIUM;
+            ln2Font = Graphics.FONT_MEDIUM; //Graphics.FONT_MEDIUM;
+            ln3Font = Graphics.FONT_MEDIUM; //Graphics.FONT_MEDIUM;
+            ln4Font  = Graphics.FONT_MEDIUM; //Graphics.FONT_MEDIUM;
+            ln5Font = Graphics.FONT_MEDIUM; //Graphics.FONT_MEDIUM;
+            ln6Font = Graphics.FONT_MEDIUM; //Graphics.FONT_MEDIUM;
+            lnSpaceL = 2.6;
+        }
         var ln1PosY = dc.getHeight() / scrnDev;
         var ln2PosY = ln1PosY + ((Graphics.getFontHeight(ln1Font) / lnSpaceM) + (Graphics.getFontHeight(ln1Font) / lnSpaceM));
         var ln3PosY = ln2PosY + ((Graphics.getFontHeight(ln2Font) / lnSpaceL) + (Graphics.getFontHeight(ln2Font) / lnSpaceL));
         var ln4PosY = ln3PosY + ((Graphics.getFontHeight(ln3Font) / lnSpaceM) + (Graphics.getFontHeight(ln3Font) / lnSpaceM));
         var ln5PosY = ln4PosY + ((Graphics.getFontHeight(ln4Font) / lnSpaceM) + (Graphics.getFontHeight(ln4Font) / lnSpaceM));
-
+        var ln6PosY = ln5PosY + ((Graphics.getFontHeight(ln5Font) / lnSpaceM) + (Graphics.getFontHeight(ln5Font) / lnSpaceM));
         dc.drawText(
             dc.getWidth() / 2,
             ln1PosY,
@@ -378,6 +410,15 @@ function retrieveSettings() {
                 ln5PosY,
                 ln5Font,
                 ln5val,
+                1 //Graphics.TEXT_JUSTIFY_CENTER
+            );
+        }
+        if(lines >= 6){
+            dc.drawText(
+                dc.getWidth() / 2,
+                ln6PosY,
+                ln6Font,
+                ln6val,
                 1 //Graphics.TEXT_JUSTIFY_CENTER
             );
         }
@@ -447,7 +488,7 @@ function retrieveSettings() {
     }
 
     // Receive the data from the web request
-    function onRec(rspCode as Lang.Number, data as Null or Lang.Dictionary or Lang.String) as Void    
+    function onRec(rspCode as Lang.Number, data as Null or Lang.Dictionary or Lang.String) as Void
     {
         //System.println("onRec");
         showErr = procRespCode(rspCode,data);
@@ -531,6 +572,37 @@ function retrieveSettings() {
                 total = frmtEnergy(data["data"][0]["generationTotal"], null);
                 //System.println("total: "+total);
 
+                if(battery == true){
+                    // Format battery
+                    try{
+                        batterySoc = data["data"][0]["batterySoc"];
+                        if(null != batterySoc){
+                            try{
+                                batterySoc = batterySoc.toFloat();
+                            }
+                            catch(ex){
+                                batterySoc = null;
+                            }
+                            if(null != batterySoc){
+                                batterySoc = batterySoc.format("%.1f") + " %";
+                            }
+                            else{
+                                batterySoc = "- %";
+                            }
+                        }
+                        else{
+                            batterySoc = "- %";
+                        }
+                    }
+                    catch(ex){
+                        batterySoc = "- %";
+                    }
+                    //System.println("battery: "+battery);
+                }
+                else{
+                    batterySoc = null;
+                }
+
                 // Format Last Update
                 var lastUpdateObject = Gregorian.utcInfo((new Time.Moment(data["data"][0]["lastUpdateTime"].toNumber())),Time.FORMAT_SHORT);
                 lstUpd = Lang.format("$1$-$2$-$3$ $4$:$5$:$6$", [
@@ -568,6 +640,7 @@ function retrieveSettings() {
         thisMonth = Application.getApp().getProperty("thisMonth");
         thisYear = Application.getApp().getProperty("thisYear");
         total = Application.getApp().getProperty("total");
+        batterySoc = Application.getApp().getProperty("batterySoc");
         lstUpd= Application.getApp().getProperty("lstUpd");
         lastUpdTmLocal = Application.getApp().getProperty("lastUpdTmLocal");
         lastUpdDtLocal = Application.getApp().getProperty("lastUpdDtLocal");
@@ -607,6 +680,7 @@ function retrieveSettings() {
                 errStr3,
                 errStr4,
                 "",
+                "",
                 5,
                 dc
             );
@@ -614,6 +688,7 @@ function retrieveSettings() {
         else  if (showRefrsh) {
             frmtScrLines(
                 WatchUi.loadResource(Rez.Strings.UP),
+                "",
                 "",
                 "",
                 "",
@@ -632,6 +707,7 @@ function retrieveSettings() {
                         lastUpdTmLocal,
                         lastUpdDtLocal,
                         "",
+                        "",
                         4,
                         dc
                     );
@@ -645,6 +721,7 @@ function retrieveSettings() {
                         today,
                         lastUpdTmLocal,
                         lastUpdDtLocal,
+                        "",
                         "",
                         4,
                         dc
@@ -660,6 +737,7 @@ function retrieveSettings() {
                         lastUpdTmLocal,
                         lastUpdDtLocal,
                         "",
+                        "",
                         4,
                         dc
                     );
@@ -673,6 +751,7 @@ function retrieveSettings() {
                         thisYear,
                         lastUpdTmLocal,
                         lastUpdDtLocal,
+                        "",
                         "",
                         4,
                         dc
@@ -688,22 +767,53 @@ function retrieveSettings() {
                         lastUpdTmLocal,
                         lastUpdDtLocal,
                         "",
+                        "",
                         4,
                         dc
                     );
                     glanceName = WatchUi.loadResource(Rez.Strings.O5);
                     glanceVal = total;
                 }
-                if(currPage==6){
+                if(currPage==6 && battery == true){
+                    // battery
                     frmtScrLines(
-                        WatchUi.loadResource(Rez.Strings.O1)+": "+curr,
-                        WatchUi.loadResource(Rez.Strings.O2)+": "+today,
-                        WatchUi.loadResource(Rez.Strings.O3)+": "+thisMonth,
-                        WatchUi.loadResource(Rez.Strings.O4)+": "+thisYear,
-                        WatchUi.loadResource(Rez.Strings.O5)+": "+total,
-                        5,
+                        WatchUi.loadResource(Rez.Strings.O7),
+                        batterySoc,
+                        lastUpdTmLocal,
+                        lastUpdDtLocal,
+                        "",
+                        "",
+                        4,
                         dc
                     );
+                    glanceName = WatchUi.loadResource(Rez.Strings.O7);
+                    glanceVal = batterySoc;
+                }
+                if(currPage==6 && battery == false || (currPage==7 && battery == true)){
+                    if(battery){
+                        frmtScrLines(
+                            WatchUi.loadResource(Rez.Strings.O1)+": "+curr,
+                            WatchUi.loadResource(Rez.Strings.O2)+": "+today,
+                            WatchUi.loadResource(Rez.Strings.O3)+": "+thisMonth,
+                            WatchUi.loadResource(Rez.Strings.O4)+": "+thisYear,
+                            WatchUi.loadResource(Rez.Strings.O5)+": "+total,
+                            WatchUi.loadResource(Rez.Strings.O7)+": "+batterySoc,
+                            6,
+                            dc
+                        );
+                    }
+                    else{
+                        frmtScrLines(
+                            WatchUi.loadResource(Rez.Strings.O1)+": "+curr,
+                            WatchUi.loadResource(Rez.Strings.O2)+": "+today,
+                            WatchUi.loadResource(Rez.Strings.O3)+": "+thisMonth,
+                            WatchUi.loadResource(Rez.Strings.O4)+": "+thisYear,
+                            WatchUi.loadResource(Rez.Strings.O5)+": "+total,
+                            "",
+                            5,
+                            dc
+                        );
+                    }
                 }
 
             ////System.println("glanceVal: " + glanceVal + ", glanceName: " + glanceName );

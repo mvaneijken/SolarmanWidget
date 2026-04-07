@@ -29,16 +29,18 @@
     <string id="O4">Year</string>
     <string id="O5">Total</string>
     <string id="O6">Overview</string>
+    <string id="O7">Battery</string>
 
     <string id="C1">Username</string>
     <string id="C2">Password</string>
 
     <string id="UI">Solarman User Identifier</string>
     <string id="PI">Solarman Site Identifier</string>
+    <string id="BT">Battery present</string>
 
     <string id="GL" scope="glance">Open to refresh</string>
 
-    <string id="DC">Datacenter</string> 
-    <string id="D1">Global</string>    
+    <string id="DC">Datacenter</string>
+    <string id="D1">Global</string>
     <string id="D2">China</string>
 </strings>
