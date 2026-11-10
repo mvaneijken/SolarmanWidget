@@ -191,11 +191,13 @@ function retrieveSettings() {
 
     function frmtEnergy(power, inputunit)
     {
-        try{
+        // Only convert values that support toFloat(). Calling it on null or an unexpected type
+        // raises an Unexpected Type Error that a try/catch does not reliably stop.
+        if(power instanceof Lang.Number || power instanceof Lang.Long || power instanceof Lang.Float || power instanceof Lang.Double || power instanceof Lang.String){
             power = power.toFloat();
         }
-        catch(ex){
-            power = 0;
+        else{
+            power = null;
         }
 
         if(power != null){
@@ -275,15 +277,33 @@ function retrieveSettings() {
         }
         else if (rspCode==412)
         {
-            if(data["result"] == null || data["error"].length > 0)
+            // The body of an error response is not guaranteed to be a JSON dictionary
+            var errResult = null;
+            var errError = null;
+            var errDescription = null;
+            var errCode = null;
+            var errIsDict = data instanceof Dictionary;
+            if(errIsDict){
+                errResult = data["result"];
+                errError = data["error"];
+                errDescription = data["error_description"];
+                errCode = data["code"];
+            }
+
+            if(!errIsDict || errResult == null || (errError instanceof Lang.String && errError.length() > 0))
             {
                 // Reset values to reinitiate login
                 showErr=true;
                 accessToken = "";
                 plantid = -1;
                 Application.getApp().setProperty("PPI",0);
-                errStr1="API Error: "+ data["error_description"];
-                if(data["error_description"] == "invalid_token" || data["code"] == "AUTH_INVALID_USERNAME_OR_PASSWORD"){
+                if(errDescription != null){
+                    errStr1="API Error: "+ errDescription;
+                }
+                else{
+                    errStr1="API Error: "+ rspCode;
+                }
+                if(errDescription == "invalid_token" || errCode == "AUTH_INVALID_USERNAME_OR_PASSWORD"){
                     errStr2=WatchUi.loadResource(Rez.Strings.A1);
                     errStr3=WatchUi.loadResource(Rez.Strings.A2);
                     errStr4=WatchUi.loadResource(Rez.Strings.A3);
@@ -549,38 +569,51 @@ function retrieveSettings() {
         }
         else{
             if (data instanceof Dictionary){
-                plantid = data["data"][0]["id"];
+                // The account can have no plants, so make sure the first plant exists
+                var plants = data["data"];
+                if(!(plants instanceof Lang.Array) || plants.size() < 1 || !(plants[0] instanceof Dictionary)){
+                    showErr = true;
+                    errStr1 = "No plants found";
+                    errStr2 = WatchUi.loadResource(Rez.Strings.E1);
+                    errStr3 = WatchUi.loadResource(Rez.Strings.E2);
+                    errStr4 = WatchUi.loadResource(Rez.Strings.E3);
+                    WatchUi.requestUpdate();
+                    return;
+                }
+                var plant = plants[0];
+
+                plantid = plant["id"];
                 Application.getApp().setProperty("plantid",plantid);
 
                 // Format curr
-                curr = frmtEnergy(data["data"][0]["generationPower"],"W");
+                curr = frmtEnergy(plant["generationPower"],"W");
                 //System.println("curr: "+curr);
 
                 // Format today
-                today = frmtEnergy(data["data"][0]["generationValue"], null);
+                today = frmtEnergy(plant["generationValue"], null);
                 //System.println("today: "+today);
 
                 // Format Month
-                thisMonth = frmtEnergy(data["data"][0]["generationMonth"], null);
+                thisMonth = frmtEnergy(plant["generationMonth"], null);
                 //System.println("thisMonth: "+thisMonth);
 
                 // Format Year
-                thisYear = frmtEnergy(data["data"][0]["generationYear"], null);
+                thisYear = frmtEnergy(plant["generationYear"], null);
                 //System.println("thisYear: "+thisYear);
 
                 // Format total
-                total = frmtEnergy(data["data"][0]["generationTotal"], null);
+                total = frmtEnergy(plant["generationTotal"], null);
                 //System.println("total: "+total);
 
                 if(battery == true){
                     // Format battery
                     try{
-                        batterySoc = data["data"][0]["batterySoc"];
+                        batterySoc = plant["batterySoc"];
                         if(null != batterySoc){
-                            try{
+                            if(batterySoc instanceof Lang.Number || batterySoc instanceof Lang.Long || batterySoc instanceof Lang.Float || batterySoc instanceof Lang.Double || batterySoc instanceof Lang.String){
                                 batterySoc = batterySoc.toFloat();
                             }
-                            catch(ex){
+                            else{
                                 batterySoc = null;
                             }
                             if(null != batterySoc){
@@ -604,17 +637,26 @@ function retrieveSettings() {
                 }
 
                 // Format Last Update
-                var lastUpdateObject = Gregorian.utcInfo((new Time.Moment(data["data"][0]["lastUpdateTime"].toNumber())),Time.FORMAT_SHORT);
-                lstUpd = Lang.format("$1$-$2$-$3$ $4$:$5$:$6$", [
-                    lastUpdateObject.year.format("%04u"),
-                    lastUpdateObject.month.format("%02u"),
-                    lastUpdateObject.day.format("%02u"),
-                    lastUpdateObject.hour.format("%02u"),
-                    lastUpdateObject.min.format("%02u"),
-                    lastUpdateObject.sec.format("%02u")
-                ]);
-                lastUpdTmLocal = frmtTmFromRFC3339(lstUpd);
-                lastUpdDtLocal = frmtDtFromRFC3339(lstUpd);
+                var lastUpdateTime = plant["lastUpdateTime"];
+                if(lastUpdateTime instanceof Lang.Number || lastUpdateTime instanceof Lang.Long || lastUpdateTime instanceof Lang.Float || lastUpdateTime instanceof Lang.Double || lastUpdateTime instanceof Lang.String){
+                    var lastUpdateObject = Gregorian.utcInfo((new Time.Moment(lastUpdateTime.toNumber())),Time.FORMAT_SHORT);
+                    lstUpd = Lang.format("$1$-$2$-$3$ $4$:$5$:$6$", [
+                        lastUpdateObject.year.format("%04u"),
+                        lastUpdateObject.month.format("%02u"),
+                        lastUpdateObject.day.format("%02u"),
+                        lastUpdateObject.hour.format("%02u"),
+                        lastUpdateObject.min.format("%02u"),
+                        lastUpdateObject.sec.format("%02u")
+                    ]);
+                    lastUpdTmLocal = frmtTmFromRFC3339(lstUpd);
+                    lastUpdDtLocal = frmtDtFromRFC3339(lstUpd);
+                }
+                else{
+                    // No usable timestamp; show a dash because the status page draws these values as text
+                    lstUpd = "-";
+                    lastUpdTmLocal = "-";
+                    lastUpdDtLocal = "-";
+                }
             }
             else{
                 setNotParsable();
