@@ -29,16 +29,18 @@
     <string id="O4">Jaar</string>
     <string id="O5">Totaal</string>
     <string id="O6">Overzicht</string>
+    <string id="O7">Batterij</string>
 
     <string id="C1">Gebruikersnaam</string>
     <string id="C2">Wachtwoord</string>
 
     <string id="UI">Solarman User Identifier</string>
     <string id="PI">Solarman Site Identifier</string>
+    <string id="BT">Batterij aanwezig</string>
 
     <string id="GL" scope="glance">Open widget</string>
-    
-    <string id="DC">Datacentrum</string> 
-    <string id="D1">Global</string>    
+
+    <string id="DC">Datacentrum</string>
+    <string id="D1">Global</string>
     <string id="D2">China</string>
 </strings>

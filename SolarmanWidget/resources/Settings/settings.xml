@@ -4,6 +4,7 @@
         <property id="SP" type="number">1</property>
         <property id="PUN" type="string"></property>
         <property id="PPS" type="string"></property>
+        <property id="BT" type="boolean"></property>
         <property id="plantid" type="number">-1</property>
 	</properties>
 	<settings>
@@ -28,6 +29,9 @@
         </setting>
         <setting propertyKey="@Properties.PPS" title="@Strings.C2">
         	<settingConfig type="Password" required="false"></settingConfig>
+        </setting>
+		<setting propertyKey="@Properties.BT" title="@Strings.BT">
+        	<settingConfig type="Boolean" required="false"></settingConfig>
         </setting>
 		<setting propertyKey="@Properties.plantid" title="@Strings.PI">
         	<settingConfig type="Numeric" required="false" readonly="true"></settingConfig>
